@@ -22,6 +22,7 @@ const sequilize = new Sequelize(process.env.PG_DB,process.env.PG_USER,process.en
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
     dialect: 'postgres',
+    logging: false,
 
     pool: {
         max: 5,
