@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon --watch src ./bin/www",
+    "start-seq": "nodemon ./src/using-sequelize.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,7 +20,7 @@
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "pg": "^8.5.1",
-    "sequelize": "^6.3.5",
-    "tedious": "^9.2.1"
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.3.5"
   }
 }

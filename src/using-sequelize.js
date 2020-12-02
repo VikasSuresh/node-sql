@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const morgan = require('morgan');
 const Sequelize = require('sequelize');
@@ -18,13 +18,10 @@ app.use(basePath, require('./routes'));
 
 app.use(errors());
 
-const sequilize = new Sequelize(process.env.DB,process.env.DB_UNAME,process.env.DB_PWD,{
-    host: 'pw-import-workflow-dev.cxk3u0qhetwz.ap-south-1.rds.amazonaws.com',
-    port: 1433,
-    dialect: 'mssql',
-    dialectOptions: {
-      ssl: true
-    },
+const sequilize = new Sequelize(process.env.PG_DB,process.env.PG_USER,process.env.PG_PWD,{
+    host: process.env.PG_HOST,
+    port: process.env.PG_PORT,
+    dialect: 'postgres',
 
     pool: {
         max: 5,
@@ -33,7 +30,7 @@ const sequilize = new Sequelize(process.env.DB,process.env.DB_UNAME,process.env.
       },
 })
 
-const Currency = sequilize.define('currency',require('./model/currency'),{
+const Currency = sequilize.define('currency',require('./model/currency-sequelize'),{
   freezeTableName: true,
 });
 
@@ -43,8 +40,8 @@ Currency.sync({force:true}).then(()=>{
   });
 });
 
-Currency.findOne().then(function (curr) {
-  console.log(curr.get('name'));
+Currency.findOne().then((currency) => {
+  console.log(currency.get('name'));
 });
 
 
