@@ -14,11 +14,11 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(basePath, require('./routes'));
 
 app.use(errors());
 
-const sequilize = new Sequelize(process.env.PG_DB,process.env.PG_USER,process.env.PG_PWD,{
+if (process.env.URI !== '' || process.env.PG_HOST !== '') {
+  const sequelize = new Sequelize(process.env.PG_DB,process.env.PG_USER,process.env.PG_PWD,{
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
     dialect: 'postgres',
@@ -30,20 +30,29 @@ const sequilize = new Sequelize(process.env.PG_DB,process.env.PG_USER,process.en
         idle: 10000
       },
 })
+  sequelize.authenticate()
+      .then(async () =>{
+          global.sequelize = sequelize;
+          const db = require('./model/seq/');
+          Object.keys(db).forEach(function(modelName) {
+              if ("associate" in db[modelName]) {
+                  db[modelName].associate(db);
+              }
+          });
+          await sequelize.sync({ alter: true });
+          app.use('/', require('./routes'));
+          console.log('Connected')
+      })
+      .catch((err)=>{
+          console.log('Unable to Establish Database Connection.',err);
+          process.exit(-1);
+      });
+  
+}
+/* Server Implementation for sequelize */
 
-const Currency = sequilize.define('currency',require('./model/currency-sequelize'),{
-  freezeTableName: true,
+app.listen(process.env.PORT, () => {
+    console.log('Express server listening on port - seq '); // eslint-disable-line
 });
-
-Currency.sync({force:true}).then(()=>{
-  return Currency.create({
-    name: "Test"
-  });
-});
-
-Currency.findOne().then((currency) => {
-  console.log(currency.get('name'));
-});
-
 
 module.exports = app;
