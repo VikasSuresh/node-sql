@@ -16,6 +16,5 @@ npm start
 
 1. It uses Postgres Sql to connect to Postgres-server in this Postgres-Docker is used.
 2. Basic Crud ops using postgres.
-3. Sequelize - not completed
-
+3. Sequelize - An ORM.
 
